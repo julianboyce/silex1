@@ -1,103 +1,171 @@
+<?php
+require_once __DIR__.'/../vendor/autoload.php';
+require __DIR__.'/../server/fb-php-sdk/facebook.php';
+
+/**
+ * Scaffolding for Facebook
+ */
+$app_id = 'APP_ID';
+$app_secret = 'APP_SECRET';
+$app_namespace = 'APP_NAMESPACE';
+$app_url = 'https://apps.facebook.com/' . $app_namespace . '/';
+$scope = '';
+
+// Init the Facebook SDK
+$facebook = new Facebook(array(
+  'appId'  => $app_id,
+  'secret' => $app_secret,
+));
+
+// Get the current user
+$user = $facebook->getUser();
+
+// If the user has not installed the app, redirect them to the Login Dialog
+if (!$user) {
+  $loginUrl = $facebook->getLoginUrl(array(
+    'scope' => $scope,
+    'redirect_uri' => $app_url,
+  ));
+
+  print('<script> top.location.href=\'' . $loginUrl . '\'</script>');
+}
+
+/**
+ * Scaffolding for Silex
+ */
+$app = new Silex\Application();
+$app['debug'] = true;
+
+?>
+
 <html>
-<style>
-  .example
-  {
-    width: auto;
-    color: #000000;
-    background-color: #e5eecc;
-    margin: 10px 0px 10px 0px;
-    padding: 5px;
-    border: 1px solid #d4d4d4;
-    background-image: linear-gradient( #ffffff , #e5eecc 100px);
-  }
-  .roundedCorner
-  {
-    border:2px solid #30000a;
-    padding:10px 40px;
-    background:#dddddd;
-    width:300px;
-    border-radius:25px;
-    box-shadow: 20px 10px 5px #888888;
-  }
-  .gradient
-  {
-    margin-top: 20px;
-    height: 50px;
-    background: #1e5799; /* Old browsers */
-    background: -moz-linear-gradient(top,  #1e5799 0%, #2989d8 50%, #207cca 100%, #7db9e8 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1e5799), color-stop(50%,#2989d8), color-stop(100%,#207cca), color-stop(100%,#7db9e8)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #1e5799 0%,#2989d8 50%,#207cca 100%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #1e5799 0%,#2989d8 50%,#207cca 100%,#7db9e8 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #1e5799 0%,#2989d8 50%,#207cca 100%,#7db9e8 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  #1e5799 0%,#2989d8 50%,#207cca 100%,#7db9e8 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=0 ); /* IE6-9 */
+<head>
+  <style>
+    .example
+    {
+      width: auto;
+      color: #000000;
+      background-color: #e5eecc;
+      margin: 10px 0px 10px 0px;
+      padding: 5px;
+      border: 1px solid #d4d4d4;
+      background-image: linear-gradient( #ffffff , #e5eecc 100px);
+    }
+    .roundedCorner
+    {
+      border:2px solid #30000a;
+      padding:10px 40px;
+      background:#dddddd;
+      width:300px;
+      border-radius:25px;
+      box-shadow: 20px 10px 5px #888888;
+    }
+    .gradient
+    {
+      margin-top: 20px;
+      height: 50px;
+      background: #1e5799; /* Old browsers */
+      background: -moz-linear-gradient(top,  #1e5799 0%, #2989d8 50%, #207cca 100%, #7db9e8 100%); /* FF3.6+ */
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1e5799), color-stop(50%,#2989d8), color-stop(100%,#207cca), color-stop(100%,#7db9e8)); /* Chrome,Safari4+ */
+      background: -webkit-linear-gradient(top,  #1e5799 0%,#2989d8 50%,#207cca 100%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
+      background: -o-linear-gradient(top,  #1e5799 0%,#2989d8 50%,#207cca 100%,#7db9e8 100%); /* Opera 11.10+ */
+      background: -ms-linear-gradient(top,  #1e5799 0%,#2989d8 50%,#207cca 100%,#7db9e8 100%); /* IE10+ */
+      background: linear-gradient(to bottom,  #1e5799 0%,#2989d8 50%,#207cca 100%,#7db9e8 100%); /* W3C */
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=0 ); /* IE6-9 */
 
-  }
-  .textEffect
-  {
-    text-shadow: 5px 5px 5px #FF0000;
-  }
+    }
+    .textEffect
+    {
+      text-shadow: 5px 5px 5px #FF0000;
+    }
 
-  .transition
-  {
-    width:100px;
-    height:50px;
-    background:red;
-    transition:width 1s;
-    -webkit-transition:width 1s; /* Safari */
-    margin-bottom: 5px;
-  }
+    .transition
+    {
+      width:100px;
+      height:50px;
+      background:red;
+      transition:width 1s;
+      -webkit-transition:width 1s; /* Safari */
+      margin-bottom: 5px;
+    }
 
-  .transition:hover
-  {
-    width:300px;
-  }
+    .transition:hover
+    {
+      width:300px;
+    }
 
-  .animation
-  {
-    width:100px;
-    height:100px;
-    background:red;
-    position:relative;
-    animation:myfirst 5s;
-    -webkit-animation:myfirst 5s; /* Safari and Chrome */
-    margin: 10px;
-  }
+    .animation
+    {
+      width:100px;
+      height:100px;
+      background:red;
+      position:relative;
+      animation:myfirst 5s;
+      -webkit-animation:myfirst 5s; /* Safari and Chrome */
+      margin: 10px;
+    }
 
-  @keyframes myfirst
-  {
-    0%   {background:red; left:0px; top:0px;}
-    25%  {background:yellow; left:200px; top:0px;}
-    50%  {background:blue; left:200px; top:200px;}
-    75%  {background:green; left:0px; top:200px;}
-    100% {background:red; left:0px; top:0px;}
-  }
+    @keyframes myfirst
+    {
+      0%   {background:red; left:0px; top:0px;}
+      25%  {background:yellow; left:200px; top:0px;}
+      50%  {background:blue; left:200px; top:200px;}
+      75%  {background:green; left:0px; top:200px;}
+      100% {background:red; left:0px; top:0px;}
+    }
 
-  @-webkit-keyframes myfirst /* Safari and Chrome */
-  {
-    0%   {background:red; left:0px; top:0px;}
-    25%  {background:yellow; left:200px; top:0px;}
-    50%  {background:blue; left:200px; top:200px;}
-    75%  {background:green; left:0px; top:200px;}
-    100% {background:red; left:0px; top:0px;}
-  }
-</style>
+    @-webkit-keyframes myfirst /* Safari and Chrome */
+    {
+      0%   {background:red; left:0px; top:0px;}
+      25%  {background:yellow; left:200px; top:0px;}
+      50%  {background:blue; left:200px; top:200px;}
+      75%  {background:green; left:0px; top:200px;}
+      100% {background:red; left:0px; top:0px;}
+    }
+  </style>
 </head>
-<body>
+<body id="main">
+<div id="fb-root"></div>
+<script src="//connect.facebook.net/en_US/all.js"></script>
+
+<script>
+  var appId = '<?php echo $facebook->getAppID() ?>';
+  // Initialize the JS SDK
+  FB.init({
+    appId: appId,
+    cookie: true,
+  });
+
+  FB.getLoginStatus(function(response) {
+
+    uid = response.authResponse.userID ? response.authResponse.userID : null;
+    if(uid) {
+    FB.api('/me?fields=first_name', function(response) {
+      var welcomeMsg = document.createElement('div');
+      var welcomeMsgStr = 'Welcome, ' + response.first_name + '!';
+      welcomeMsg.innerHTML = welcomeMsgStr;
+      welcomeMsg.id = 'welcome_msg';
+      document.getElementById('fbProfileBox').appendChild(welcomeMsg);
+
+      var imageURL = 'https://graph.facebook.com/' + uid + '/picture?width=256&height=256';
+      var profileImage = document.createElement('img');
+      profileImage.setAttribute('src', imageURL);
+      profileImage.id = 'welcome_img';
+      profileImage.setAttribute('height', '148px');
+      profileImage.setAttribute('width', '148px');
+      document.getElementById('fbProfileBox').appendChild(profileImage);
+    });
+    }
+  });
+</script>
 
 <?php
+$app->get('/', function () {
+  return <<< EOT
+<div id="fbProfileBox"></div>
+EOT;
 
-require_once __DIR__.'/../vendor/autoload.php'; 
-
-$app = new Silex\Application();
-
-$app['debug'] = true;
-$app->register(new Silex\Provider\ServiceControllerServiceProvider());
-
-$app->get('/', function() use($app) {
-  return 'Hello';
 });
-
 
 /** Example GET Routes */
 $friends = array(
@@ -126,7 +194,7 @@ $app->get('/names', function () use ($friends) {
     $output .= '<br />';
   }
 
-  return $output;
+  return '<div id="fbProfileBox"></div>' . $output;
 });
 
 $app->get('/locations', function () use ($friends) {
@@ -136,7 +204,7 @@ $app->get('/locations', function () use ($friends) {
     $output .= '<br />';
   }
 
-  return $output;
+  return '<div id="fbProfileBox"></div>' . $output;
 });
 
 /** Dynamic Routing Example
@@ -151,7 +219,7 @@ $app->get('/id/{id}', function (Silex\Application $app, $id) use ($friends) {
 
   $friend = $friends[$id];
 
-  return  "<h1>{$friend['name']}</h1>".
+  return  '<div id="fbProfileBox"></div>' . "<h1>{$friend['name']}</h1>".
     "<p>{$friend['location']}</p>";
 });
 
@@ -159,7 +227,7 @@ $app->get('/id/{id}', function (Silex\Application $app, $id) use ($friends) {
 $app->get('css3', function() {
   return <<< EOT
   <style>
-    body
+  body
   {
     background: url("../image/lisa_simpson.png"), url("../image/mountain.jpg");
     background-size:50px 50px, 100% 100%;
@@ -167,6 +235,7 @@ $app->get('css3', function() {
     background-repeat:no-repeat;
   }
   </style>
+  <div id="fbProfileBox"></div>
 <div class="roundedCorner">A few rounded corners... to get Lisa and this mountain we added multiple background urls</div>
 
 <div class="gradient roundedCorner">Use this cool gradient builder: <a href="http://www.colorzilla.com/gradient-editor/">gradient editor</a></div>
@@ -183,6 +252,7 @@ EOT;
 /** Creatives Examples */
 $app->get('getcreative', function() {
   return <<< EOT
+  <div id="fbProfileBox"></div>
 <a href="http://www.creativebloq.com/design/examples-svg-7112785">Cool SVG examples</a><br/>
 <a href="http://www.creativebloq.com/app-design/how-build-app-tutorials-12121473">Build mobile apps for designers</a><br/>
 <a href="http://www.creativebloq.com/typography/free-graffiti-fonts-11121160">Graffiti Fonts</a><br/>
@@ -197,6 +267,7 @@ EOT;
 $app->get('html5', function() {
   return <<< EOT
 
+<div id="fbProfileBox"></div>
 <div>
 <p>First I want to say that HTML5 is definitely pretty cool but not as useful for alot of sites as I had hoped.  The semantic elements like &lt;nav&gt; &lt;footer&gt; &lt;aside&gt; &lt;figure&gt; &lt;header&gt; are nice but if you really want to move towards semantics you have to go the AngularJS route.</p>
 
@@ -377,6 +448,7 @@ EOT;
 
 $app->get('phpwebstorm', function () {
   return <<< EOT
+  <div id="fbProfileBox"></div>
   <h2>Live Templates</h2>
   <p>This allows you to use shortcuts for code chunks:
   <a href="http://blog.jetbrains.com/webide/2012/10/high-speed-coding-with-custom-live-templates/">Live Templates</a>
@@ -387,12 +459,11 @@ EOT;
 
 });
 
-
 $app->run();
 
 ?>
 
 
+
 </body>
 </html>
-
